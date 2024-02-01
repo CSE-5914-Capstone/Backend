@@ -1,4 +1,5 @@
-from elasticsearch import Elasticsearch, helpers
+from elasticsearch import Elasticsearch
+from elasticsearch.helpers import bulk
 import os
 import json
 import time
@@ -20,22 +21,16 @@ if not es.indices.exists(index='songs'):
     print('Created blank index "songs"')
     es.indices.create(index='songs')
 
-inc = 0
-for song in songs:
-    response = es.search(index='songs', body={"query": {"match_phrase": {"track_id": song['track_id']}}})
-    if response['hits']['total']['value'] == 0:
-        es.index(index='songs',body = song)
-    inc = inc+1
-    if(inc%500 == 0):
-        print(f'{inc} songs loaded')
+
+response = bulk(es, songs, index='songs')
 
 end = time.time()
 
-print(f"Loading {inc} songs took {end-start} seconds ({(end-start)/60} minutes)")
+print(f"Loading {len(songs)} songs took {end-start} seconds ({(end-start)/60} minutes)")
 
 start = time.time()
 response = es.search(index='songs', body={"query": {"match": {"track_name": "Dance Monkey"}}})
-print(response)
+print(response['hits']['hits'][0])
 end=time.time()
 
 print(f"Single song search took {end-start} seconds ({(end-start)/60} minutes)")
