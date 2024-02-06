@@ -10,9 +10,17 @@ elastic_pwd_file.close()
 es = Elasticsearch('https://localhost:9200', ca_certs="http_ca.crt", basic_auth=("elastic", elastic_pwd))
 
 def searchSimilar(targetSongData):
+    #Some of the following variables are subject to change
     targetSubGenre = targetSongData['playlist_subgenre']
     targetDanceability = targetSongData['danceability']
-    similarSongs = es.search(index='songs', body={'query': {'bool': {'must':[{'match': {'playlist_subgenre' : targetSubGenre}}, {'match':{'danceability': targetDanceability}}]}}})
+    targetGenre = targetSongData['playlist_genre']
+    targetEnergy = targetSongData['energy']
+    targetKey = targetSongData['key']
+    targetLoudness = targetSongData['loudness']
+    targetLiveness = targetSongData['liveness']
+    targetHappiness = targetSongData['valence']
+    targetTempo = targetSongData['tempo']
+    similarSongs = es.search(index='songs', body={'query': {'bool': {'must':[{'match': {'playlist_subgenre' : targetSubGenre}}, {'match':{'danceability': targetDanceability}}, {'match':{'playlist_genre' : targetGenre}}, {'match':{'energy' : targetEnergy}}, {'match':{'key' : targetKey}}, {'match':{'loudness' : targetLoudness}}, {'match':{'liveness' : targetLiveness}}, {'match':{'valence': targetHappiness}}, {'match':{'tempo' : targetTempo}}]}}})
     return similarSongs['hits']['hits']
 
 def queryTop10(standInParams):
