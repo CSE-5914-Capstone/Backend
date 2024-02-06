@@ -2,12 +2,7 @@ from elasticsearch import Elasticsearch, helpers
 from flask import Flask
 import os
 import json
-
-elastic_pwd_file = open('docker_elastic_pwd.txt', 'r')
-elastic_pwd = elastic_pwd_file.read()
-elastic_pwd_file.close()
-
-es = Elasticsearch('https://localhost:9200', ca_certs="http_ca.crt", basic_auth=("elastic", elastic_pwd))
+import song_loader
 
 def searchSimilar(targetSongData):
     targetSubGenre = targetSongData['playlist_subgenre']
@@ -24,8 +19,9 @@ def queryTop10(standInParams):
     similarSongs = searchSimilar(targetSongData)
     for song in similarSongs:
         names.append(song['_source']['track_name'])
-    return names
-    
+    playlist = dict()
+    playlist['playlist'] = names
+    return playlist 
 
 app = Flask(__name__)
 
@@ -35,6 +31,18 @@ def getSong():
     standInParams['track_name'] = 'Macarena'
     return queryTop10(standInParams)
 
+@app.route('/')
+def init():
+    elastic_pwd_file = open('docker_elastic_pwd.txt', 'r')
+    elastic_pwd = elastic_pwd_file.read()
+    elastic_pwd_file.close()
+
+    es = Elasticsearch('https://localhost:9200', ca_certs="http_ca.crt", basic_auth=("elastic", elastic_pwd))
+
+    if not es.indices.exists(index='songs'):
+        song_loader.load_all()
+
 if __name__ == '__main__':
+    init()
     print(getSong())
     #app.run(debug=True)
