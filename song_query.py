@@ -11,9 +11,25 @@ elastic_pwd_file.close()
 es = Elasticsearch('https://localhost:9200', ca_certs="http_ca.crt", basic_auth=("elastic", elastic_pwd))
 
 def searchSimilar(targetSongData):
+    #Some of the following variables are subject to change
     targetSubGenre = targetSongData['playlist_subgenre']
     targetDanceability = targetSongData['danceability']
-    similarSongs = es.search(index='songs', body={'query': {'bool': {'must':[{'match': {'playlist_subgenre' : targetSubGenre}}, {'match':{'danceability': targetDanceability}}]}}})
+    targetGenre = targetSongData['playlist_genre']
+    targetEnergy = targetSongData['energy']
+    targetKey = targetSongData['key']
+    targetLoudness = targetSongData['loudness']
+    targetLiveness = targetSongData['liveness']
+    targetHappiness = targetSongData['valence']
+    targetTempo = targetSongData['tempo']
+    similarSongs = es.search(index='songs', body={'query': {'bool': {'must':[{'match': {'playlist_subgenre' : targetSubGenre}}, {'match':{'playlist_genre' : targetGenre}}, {'match':{'key' : targetKey}}],
+                    'filter': [
+                    {'range':{'danceability': {'gte': targetDanceability - 0.1, 'lte': targetDanceability + 0.1}}}, 
+                    {'range':{'energy' : {'gte': targetEnergy - 0.1, 'lte': targetEnergy + 0.1}}},  
+                    {'range':{'loudness' : {'gte': targetLoudness - 10, 'lte': targetLoudness + 10}}}, 
+                    {'range':{'liveness' : {'gte': targetLiveness - 0.1, 'lte': targetLiveness + 0.1}}}, 
+                    {'range':{'valence': {'gte': targetHappiness - 0.1, 'lte': targetHappiness + 0.1}}}, 
+                    {'range':{'tempo' : {'gte': targetTempo - 10, 'lte': targetTempo + 10}}}
+                    ]}}})
     return similarSongs['hits']['hits']
 
 def queryTop10(standInParams):
