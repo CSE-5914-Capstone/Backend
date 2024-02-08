@@ -22,7 +22,7 @@ def load_all():
         print('Created blank index "songs"')
         es.indices.create(index='songs')
 
-    response = bulk(es, songs, index='songs')
+    bulk(es, songs, index='songs')
 
     end = time.time()
 
@@ -30,7 +30,6 @@ def load_all():
 
     start = time.time()
     response = es.search(index='songs', body={"query": {"match": {"track_name": "Dance Monkey"}}})
-    print(response['hits']['hits'][0])
     end=time.time()
 
     print(f"Single song search took {end-start} seconds ({(end-start)/60} minutes)")
