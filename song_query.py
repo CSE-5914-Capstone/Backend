@@ -42,8 +42,8 @@ def init():
 
     if not es.indices.exists(index='songs'):
         song_loader.load_all()
+    return ({"Songs": "Loaded"})
 
 if __name__ == '__main__':
     init()
-    print(getSong())
-    #app.run(debug=True)
+    app.run(debug=True)
