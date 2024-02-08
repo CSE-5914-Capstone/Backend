@@ -20,7 +20,15 @@ def searchSimilar(targetSongData):
     targetLiveness = targetSongData['liveness']
     targetHappiness = targetSongData['valence']
     targetTempo = targetSongData['tempo']
-    similarSongs = es.search(index='songs', body={'query': {'bool': {'must':[{'match': {'playlist_subgenre' : targetSubGenre}}, {'match':{'danceability': targetDanceability}}, {'match':{'playlist_genre' : targetGenre}}, {'match':{'energy' : targetEnergy}}, {'match':{'key' : targetKey}}, {'match':{'loudness' : targetLoudness}}, {'match':{'liveness' : targetLiveness}}, {'match':{'valence': targetHappiness}}, {'match':{'tempo' : targetTempo}}]}}})
+    similarSongs = es.search(index='songs', body={'query': {'bool': {'must':[{'match': {'playlist_subgenre' : targetSubGenre}}, {'match':{'playlist_genre' : targetGenre}}, {'match':{'key' : targetKey}}],
+                    'filter': [
+                    {'range':{'danceability': {'gte': targetDanceability - 0.1, 'lte': targetDanceability + 0.1}}}, 
+                    {'range':{'energy' : {'gte': targetEnergy - 0.1, 'lte': targetEnergy + 0.1}}},  
+                    {'range':{'loudness' : {'gte': targetLoudness - 10, 'lte': targetLoudness + 10}}}, 
+                    {'range':{'liveness' : {'gte': targetLiveness - 0.1, 'lte': targetLiveness + 0.1}}}, 
+                    {'range':{'valence': {'gte': targetHappiness - 0.1, 'lte': targetHappiness + 0.1}}}, 
+                    {'range':{'tempo' : {'gte': targetTempo - 10, 'lte': targetTempo + 10}}}
+                    ]}}})
     return similarSongs['hits']['hits']
 
 def queryTop10(standInParams):
@@ -45,4 +53,4 @@ def getSong():
 
 if __name__ == '__main__':
     print(getSong())
-    #app.run(debug=True)
+    app.run(debug=True)
