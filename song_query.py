@@ -21,14 +21,16 @@ def searchSimilar(targetSongData):
     targetLiveness = targetSongData['liveness']
     targetHappiness = targetSongData['valence']
     targetTempo = targetSongData['tempo']
-    similarSongs = es.search(index='songs', body={'query': {'bool': {'must':[{'match': {'playlist_subgenre' : targetSubGenre}}, {'match':{'playlist_genre' : targetGenre}}, {'match':{'key' : targetKey}}],
+    #{'match': {'playlist_subgenre' : targetSubGenre}}
+    #{'match':{'key' : targetKey}}
+    similarSongs = es.search(index='songs', body={'query': {'bool': {'must':[{'match':{'playlist_genre' : targetGenre}}],
                     'filter': [
-                    {'range':{'danceability': {'gte': targetDanceability - 0.1, 'lte': targetDanceability + 0.1}}}, 
-                    {'range':{'energy' : {'gte': targetEnergy - 0.1, 'lte': targetEnergy + 0.1}}},  
-                    {'range':{'loudness' : {'gte': targetLoudness - 10, 'lte': targetLoudness + 10}}}, 
-                    {'range':{'liveness' : {'gte': targetLiveness - 0.1, 'lte': targetLiveness + 0.1}}}, 
-                    {'range':{'valence': {'gte': targetHappiness - 0.1, 'lte': targetHappiness + 0.1}}}, 
-                    {'range':{'tempo' : {'gte': targetTempo - 10, 'lte': targetTempo + 10}}}
+                    {'range':{'danceability': {'gte': targetDanceability - 0.15, 'lte': targetDanceability + 0.15}}}, 
+                    {'range':{'energy' : {'gte': targetEnergy - 0.15, 'lte': targetEnergy + 0.15}}},  
+                    {'range':{'loudness' : {'gte': targetLoudness - 15, 'lte': targetLoudness + 15}}}, 
+                    {'range':{'liveness' : {'gte': targetLiveness - 0.15, 'lte': targetLiveness + 0.15}}}, 
+                    {'range':{'valence': {'gte': targetHappiness - 0.15, 'lte': targetHappiness + 0.15}}}, 
+                    {'range':{'tempo' : {'gte': targetTempo - 15, 'lte': targetTempo + 15}}}
                     ]}}})
     return similarSongs['hits']['hits']
 
@@ -50,7 +52,7 @@ app = Flask(__name__)
 @app.route('/query')
 def getSong():
     standInParams = dict()
-    standInParams['track_name'] = 'Macarena'
+    standInParams['track_name'] = 'Beat It'
     return queryTop10(standInParams)
 
 @app.route('/')
