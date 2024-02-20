@@ -33,3 +33,16 @@ Run `temp_song_deleter.py` to clear current status of songs in index and songs i
 `valence` - 0-1 score for happiness of a track
 `tempo` - Beats per Minute of the track
 `duration_ms` - Time of track in milliseconds
+
+## Query Information
+Current Input - One hard-coded track name.
+Query Matches:
+  - Genre of search song to the queried songs
+Query Filter:
+  - Danceability Range +/- 0.15
+  - Energy Range +/- 0.15
+  - Loudness Range +/- 15
+  - Liveness Range +/- 0.15
+  - Happiness (Valence) Range +/- 0.15
+  - Tempo Range +/- 15
+
