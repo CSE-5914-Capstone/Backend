@@ -1,5 +1,5 @@
 from elasticsearch import Elasticsearch, helpers
-from flask import Flask
+from flask import Flask, request
 from flask_cors import CORS
 import os
 import json
@@ -54,8 +54,9 @@ CORS(app)
 
 @app.route('/query')
 def getSong():
+    track_name = request.args.get('trackname')
     standInParams = dict()
-    standInParams['track_name'] = 'Beat It'
+    standInParams['track_name'] = f"{track_name}"
     return queryTop10(standInParams)
 
 @app.route('/')
