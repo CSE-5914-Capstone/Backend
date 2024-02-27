@@ -55,6 +55,8 @@ CORS(app)
 @app.route('/query')
 def getSong():
     track_name = request.args.get('trackname')
+    if track_name is None:
+        track_name = "Macarena"
     standInParams = dict()
     standInParams['track_name'] = f"{track_name}"
     return queryTop10(standInParams)
