@@ -5,7 +5,7 @@ Those are in the .gitignore file, keep your local versions local
 
 ### Accessing Data
 
-Download [`track_features.csv`](https://www.kaggle.com/datasets/rodolfofigueroa/spotify-12m-songs) from https://www.kaggle.com/datasets/rodolfofigueroa/spotify-12m-songs. Add this file to the `datastore` directory (it is included in the .gitignore to prevent tracking of massive files). Run `csvtojson.py` in order to get the data into json format, run `temp_song_deleter.py` to assert that you have a clean elasticsearch index, and run `song_query.py` to open flask server.
+Download [`track_features.csv`](https://www.kaggle.com/datasets/rodolfofigueroa/spotify-12m-songs) from https://www.kaggle.com/datasets/rodolfofigueroa/spotify-12m-songs. Add this file to the `datastore` directory (it is included in the .gitignore to prevent tracking of massive files). Run `csvtojson.py` in order to get the data into json format, run `clean_data.py` to create the unique song data which will eventually be indexed, run `temp_song_deleter.py` to assert that you have a clean elasticsearch index, and run `song_query.py` to open flask server.
 
 The /init route answers requests with a simple object that states that songs have been loaded.
 
