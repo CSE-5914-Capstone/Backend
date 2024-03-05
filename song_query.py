@@ -12,6 +12,11 @@ elastic_pwd_file.close()
 
 es = Elasticsearch('https://localhost:9200', ca_certs="http_ca.crt", basic_auth=("elastic", elastic_pwd))
 
+def makeParams(track_name, danceability, energy, loudness, liveness, valence, tempo):
+    params = dict()
+
+    return params
+
 def searchSimilar(targetSongData):
     #Some of the following variables are subject to change
 
@@ -48,7 +53,6 @@ def queryTop10(standInParams):
 app = Flask(__name__)
 CORS(app)
 
-
 @app.route('/query')
 def getSong():
     track_name = request.args.get('trackname')
@@ -59,8 +63,20 @@ def getSong():
     return queryTop10(standInParams)
 
 @app.route('/querycard')
-def getSong():
+def getSongAndAttributes():
     track_name = request.args.get('trackname')
+    if track_name is None:
+        track_name = "Macarena"
+    danceability = request.args.get('danceability')
+    energy = request.args.get('energy')
+    loudness = request.args.get('loudness')
+    liveness = request.args.get('liveness')
+    valence = request.args.get('valence')
+    tempo = request.args.get('tempo')
+
+    params = makeParams(track_name, danceability, energy, loudness, liveness, valence, tempo)
+
+    
 
 @app.route('/')
 def init():
