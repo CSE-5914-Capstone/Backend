@@ -28,7 +28,21 @@ print('connection created')
 
 def makeParams(track_name, danceability, energy, loudness, liveness, valence, tempo):
     params = dict()
+    params['danceability'] = danceability
+    params['energy'] = energy
+    params['loudness'] = loudness
+    params['liveness'] = liveness
+    params['valence'] = valence
+    params['tempo'] = tempo
+    
+    for key, value in params.items():
+        if value is None:
+            params[key] = -1
 
+    if track_name is None:
+        params['track_name'] = 'Macarena'
+    else:
+        params['track_name'] = track_name
     return params
 
 def searchSimilar(targetSongData):
@@ -95,8 +109,6 @@ def getSong():
 @app.route('/querycard')
 def getSongAndAttributes():
     track_name = request.args.get('trackname')
-    if track_name is None:
-        track_name = "Macarena"
     danceability = request.args.get('danceability')
     energy = request.args.get('energy')
     loudness = request.args.get('loudness')
