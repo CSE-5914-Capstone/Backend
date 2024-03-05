@@ -15,6 +15,6 @@ def csvtojson(inputfile, outputfile):
 
 if __name__ == "__main__":
     inputcsv = 'tracks_features.csv'
-    outputjson = 'example.json'
+    outputjson = 'initsongs_1200000.json'
 
     csvtojson(inputcsv, outputjson)

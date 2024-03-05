@@ -3,4 +3,4 @@ docker_elastic_pwd.txt
 datastore/uniquesongs.json
 datastore/initsongs_30000.json
 datastore/initsongs_1200000.json
-datastore/tracks_features.json
+datastore/tracks_features.csv
