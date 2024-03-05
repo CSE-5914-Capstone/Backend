@@ -58,6 +58,10 @@ def getSong():
     standInParams['track_name'] = f"{track_name}"
     return queryTop10(standInParams)
 
+@app.route('/querycard')
+def getSong():
+    track_name = request.args.get('trackname')
+
 @app.route('/')
 def init():
 
