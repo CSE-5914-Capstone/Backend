@@ -15,7 +15,7 @@ def load_all():
 
     start = time.time()
 
-    with open("backend/datastore/uniquesongs.json", encoding='utf8') as file:
+    with open("datastore/uniquesongs.json", encoding='utf8') as file:
         songs = json.loads(file.read())
 
     if not es.indices.exists(index='songs'):
