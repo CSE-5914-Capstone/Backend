@@ -1,5 +1,6 @@
 from elasticsearch import Elasticsearch, helpers
 from flask import Flask
+from flask_cors import CORS
 import os
 import json
 import song_loader
@@ -76,6 +77,8 @@ def getSongAttributes(standInParams):
     
 
 app = Flask(__name__)
+CORS(app)
+
 
 @app.route('/query')
 def getSong():
