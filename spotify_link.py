@@ -17,16 +17,17 @@ def getAccessToken(auth):
 def getLink(song_id, accessToken):
     print('in get Link')
     url = f'https://api.spotify.com/v1/tracks/{song_id}'
-    head = {
+    headers = {
         'Authorization': f'Bearer {accessToken}'
     }
-    response = requests.get(url, headers=head)
-    
+    response = requests.get(url, headers=headers)
+    print(response.content)
     if response.status_code == 200:
         track_data = response.json()
-        return track_data['uri']['spotify']
+        return track_data['external_urls']['spotify']
     else:
         print("Error:", response.status_code)
+        print(response.content)
         return None
 
 def setLinks(playlist, authenticate, accessToken):
@@ -37,7 +38,7 @@ def setLinks(playlist, authenticate, accessToken):
         print(song)
         newObj = dict()
         newObj['Song Name'] = song['track_name']
-        newObj['Artist'] = song['track_artist']
+        #newObj['Artist'] = song['track_artist']
         newObj['Link'] = getLink(song['track_id'], accessToken)
         songList.append(newObj)
     print('about to return links')
