@@ -22,7 +22,7 @@ clientId = '834545c65b434617a906b8ea321e7e5b'
 clientPass = '8861fc75e1bd49c29aa035278faa6e8f'
 authenticate = SpotifyOAuth(client_id=clientId,client_secret=clientPass, redirect_uri='http://127.0.0.1:5000/testLink')
 sp = Spotify(client_credentials_manager=authenticate), authenticate
-token = authenticate.get_access_token()
+token = authenticate.get_cached_token()
 print('connection created')
 
 
@@ -82,7 +82,7 @@ CORS(app)
 def getSong():
     track_name = request.args.get('trackname')
     if track_name is None:
-        track_name = "Macarena"
+        track_name = "Move Your Feet"
     standInParams = dict()
     standInParams['track_name'] = f"{track_name}"
     return queryTop10(standInParams)
@@ -95,8 +95,12 @@ def outputLinks():
     links = []
     #print(playlist)
     for song in playlist['Playlist Songs with attributes']:
-        links.append('https://open.spotify.com/track/' + song['track_id'])
-    #links['Song Links'] = spotify_link.setLinks(playlist, token, authenticate)
+        newObj = dict()
+        newObj['Song Name'] = (song['track_name'])
+        #newObj['Artist'] = (song['track_artist'])
+        newObj['Link'] = ('https://open.spotify.com/track/' + song['track_id'])
+        links.append(newObj)
+    #links = spotify_link.setLinks(playlist, authenticate, token)
     linkPlaylist = dict()
     linkPlaylist['Song Links'] = links
     return linkPlaylist
