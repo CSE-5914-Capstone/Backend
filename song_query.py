@@ -9,7 +9,7 @@ import requests
 from spotipy import Spotify
 from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy.oauth2 import SpotifyOAuth
-import normalize_parameters
+import scale_value
 
 
 elastic_pwd_file = open('docker_elastic_pwd.txt', 'r')
@@ -22,22 +22,18 @@ clientId = '834545c65b434617a906b8ea321e7e5b'
 clientPass = '8861fc75e1bd49c29aa035278faa6e8f'
 authenticate = SpotifyOAuth(client_id=clientId,client_secret=clientPass, redirect_uri='http://127.0.0.1:5000/testLink')
 sp = Spotify(client_credentials_manager=authenticate), authenticate
-token = authenticate.get_cached_token()
+token = authenticate.get_access_token()
 print('connection created')
 
 
 def makeParams(track_name, danceability, energy, loudness, liveness, valence, tempo):
     params = dict()
-    params['danceability'] = danceability
-    params['energy'] = energy
-    params['loudness'] = loudness
-    params['liveness'] = liveness
-    params['valence'] = valence
-    params['tempo'] = tempo
-    
-    for key, value in params.items():
-        if value is None:
-            params[key] = -1
+    params['danceability'] = scale_value.scale_danceability(danceability)
+    params['energy'] = scale_value.scale_energy(energy)
+    params['loudness'] = scale_value.scale_loudness(loudness)
+    params['liveness'] = scale_value.scale_liveness(liveness)
+    params['valence'] = scale_value.scale_valence(valence)
+    params['tempo'] = scale_value.scale_tempo(tempo)
 
     if track_name is None:
         params['track_name'] = 'Macarena'
@@ -45,15 +41,13 @@ def makeParams(track_name, danceability, energy, loudness, liveness, valence, te
         params['track_name'] = track_name
     return params
 
-def searchSimilar(targetSongData):
-    #Some of the following variables are subject to change
-
-    targetDanceability = targetSongData['danceability']
-    targetEnergy = targetSongData['energy']
-    targetLoudness = targetSongData['loudness']
-    targetLiveness = targetSongData['liveness']
-    targetHappiness = targetSongData['valence']
-    targetTempo = targetSongData['tempo']
+def searchSimilar(targetSongData, userData):
+    targetDanceability = targetSongData['danceability'] if userData['danceability'] == -1 else userData['danceability']
+    targetEnergy = targetSongData['energy'] if userData['energy'] == -1 else userData['energy']
+    targetLoudness = targetSongData['loudness'] if userData['loudness'] == -1 else userData['loudness']
+    targetLiveness = targetSongData['liveness'] if userData['liveness'] == -1 else userData['liveness']
+    targetHappiness = targetSongData['valence'] if userData['valence'] == -1 else userData['valence']
+    targetTempo = targetSongData['tempo'] if userData['tempo'] == -1 else userData['tempo']
     similarSongs = es.search(index='songs', body={'query': {'bool': { #'must': [{'match':{'playlist_genre' : targetGenre}}],
                     'filter': [
                     {'range':{'danceability': {'gte': targetDanceability - 0.15, 'lte': targetDanceability + 0.15}}}, 
@@ -71,7 +65,7 @@ def queryTop10(standInParams):
     targetSongData = targetSong['_source']
 
     names = []
-    similarSongs = searchSimilar(targetSongData)
+    similarSongs = searchSimilar(targetSongData, standInParams)
     for song in similarSongs:
         names.append(song['_source']['track_name'])
     playlist = dict()
@@ -83,8 +77,9 @@ def getSongAttributes(standInParams):
     targetSong = es.search(index='songs', body={"query": {"match": {"track_name": trackname}}})['hits']['hits'][0]
     targetSongData = targetSong['_source']
 
+    standInParams = makeParams(trackname, None, None, None, None, None, None)
     names = []
-    similarSongs = searchSimilar(targetSongData)
+    similarSongs = searchSimilar(targetSongData, standInParams)
     for song in similarSongs:
         names.append(song['_source'])
     #print(names)
@@ -100,9 +95,11 @@ CORS(app)
 def getSong():
     track_name = request.args.get('trackname')
     if track_name is None:
-        track_name = "Move Your Feet"
+        track_name = "Macarena"
     standInParams = dict()
     standInParams['track_name'] = f"{track_name}"
+
+    standInParams = makeParams(track_name, None, None, None, None, None, None)
     return queryTop10(standInParams)
 
 
@@ -118,6 +115,8 @@ def getSongAndAttributes():
 
     params = makeParams(track_name, danceability, energy, loudness, liveness, valence, tempo)
 
+    return queryTop10(params)
+
 
 @app.route('/testLink')
 def outputLinks():
@@ -127,12 +126,8 @@ def outputLinks():
     links = []
     #print(playlist)
     for song in playlist['Playlist Songs with attributes']:
-        newObj = dict()
-        newObj['Song Name'] = (song['track_name'])
-        #newObj['Artist'] = (song['track_artist'])
-        newObj['Link'] = ('https://open.spotify.com/track/' + song['track_id'])
-        links.append(newObj)
-    #links = spotify_link.setLinks(playlist, authenticate, token)
+        links.append('https://open.spotify.com/track/' + song['track_id'])
+    #links['Song Links'] = spotify_link.setLinks(playlist, token, authenticate)
     linkPlaylist = dict()
     linkPlaylist['Song Links'] = links
     return linkPlaylist
