@@ -67,7 +67,13 @@ def queryTop10(standInParams):
     names = []
     similarSongs = searchSimilar(targetSongData, standInParams)
     for song in similarSongs:
-        names.append(song['_source']['track_name'])
+        currsongdata = dict()
+        currsongdata['track_name'] = song['_source']['track_name']
+        currsongdata['track_id'] = song['_source']['track_id']
+        currsongdata['spotify_link'] = 'https://open.spotify.com/track/' + song['_source']['track_id']
+        currsongdata['tempo'] = song['_source']['tempo']
+        currsongdata['artists'] = song['_source']['artists']
+        names.append(currsongdata)
     playlist = dict()
     playlist['Playlist'] = names
     return playlist

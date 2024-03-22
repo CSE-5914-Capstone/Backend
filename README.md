@@ -15,6 +15,21 @@ The /query route answers requests with 10 an array of 10 song names constituting
 
 Run `temp_song_deleter.py` to clear current status of songs in index and songs index to reset workflow
 
+## Queryable API Routes
+
+`\query`
+
+- Parameters
+  - `?trackname`: plaintext optional name of a song parameter
+    - defaults to 'Macarena'
+    - playlist based on this song and its attributes
+
+Returns object with key `Playlist` and value of an array of 10 song names constituting a playlist
+
+`\testLink`
+
+- Returns an object with key `Song Links` and a value of 
+
 ## Data dictionary - Songs
 `track_id` - Hash for song
 
