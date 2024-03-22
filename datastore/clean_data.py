@@ -17,6 +17,7 @@ def trimSong30000(fullSong):
     currsong['tempo'] = fullSong['tempo']
     currsong['duration_ms'] = fullSong['duration_ms']
     currsong['explicit'] = True
+    currsong['artists'] = [fullSong['track_artist']]
 
     return currsong
 
@@ -67,7 +68,18 @@ def trimSong1200000(fullSong):
         return False
     else:
         currsong['duration_ms'] = duration
-    currsong['explicit'] = bool(fullSong['explicit'])
+
+    explicit = bool(fullSong['explicit'])
+    if explicit is None:
+        return False
+    else:
+        currsong['explicit'] = explicit
+
+    artists = fullSong['artists']
+    if artists is None:
+        return False
+    else:
+        currsong['artists'] = artists
 
     return currsong
 
