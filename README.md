@@ -41,6 +41,7 @@ Returns object for a playlist on that track name
 ```
 {"Playlist":[
   {
+    "album_id": string,
     "artists":[
         string,
         string,
@@ -70,6 +71,7 @@ Returns object for a playlist on that track name
 ```
 {"Playlist":[
   {
+    "album_id": string,
     "artists":[
         string,
         string,
