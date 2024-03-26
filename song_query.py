@@ -21,8 +21,8 @@ es = Elasticsearch('https://localhost:9200', ca_certs="http_ca.crt", basic_auth=
 clientId = '834545c65b434617a906b8ea321e7e5b'
 clientPass = '8861fc75e1bd49c29aa035278faa6e8f'
 authenticate = SpotifyOAuth(client_id=clientId,client_secret=clientPass, redirect_uri='http://127.0.0.1:5000/testLink')
-sp = Spotify(client_credentials_manager=authenticate), authenticate
-token = authenticate.get_access_token()
+#sp = Spotify(client_credentials_manager=authenticate), authenticate
+#token = authenticate.get_access_token()
 print('connection created')
 
 

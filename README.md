@@ -17,18 +17,90 @@ Run `temp_song_deleter.py` to clear current status of songs in index and songs i
 
 ## Queryable API Routes
 
+`\querycard`
+
+**All params scale from 0-10 to range of values available in data**
+- Parameters 
+  - `?trackname`: plaintext optional name of a song
+    - defaults to 'Macarena'
+  - `?danceability`: 0-10 user specified level of song danceability
+    - defaults to `trackname` danceability value
+  - `?energy`: 0-10 user specified level of song energy
+    - defaults to `trackname` energy value
+  - `?loudness`: 0-10 user specified level of song loudness
+    - defaults to `trackname` loudness value
+  - `?liveness`: 0-10 user specified level of song liveness
+    - defaults to `trackname` loudness value
+  - `?valence`: 0-10 user specified level of song valence (spotify uses this score to capture "happiness" of a song)
+    - defaults to `trackname` loudness value
+  - `?tempo`: 0-10 user specified tempo of a song
+    - defaults to `trackname` tempo (bpm)
+
+Returns object for a playlist on that track name
+
+```
+{"Playlist":[
+  {
+    "artists":[
+        string,
+        string,
+      ...
+      ],
+    "spotify_link": string,
+    "tempo": float,
+    "track_id": string,
+    "track_name": string
+  },
+  {
+    ...
+  },
+  ...
+]}
+```
+
 `\query`
 
 - Parameters
-  - `?trackname`: plaintext optional name of a song parameter
+  - `?trackname`: plaintext optional name of a song 
     - defaults to 'Macarena'
     - playlist based on this song and its attributes
 
-Returns object with key `Playlist` and value of an array of 10 song names constituting a playlist
+Returns object for a playlist on that track name
+
+```
+{"Playlist":[
+  {
+    "artists":[
+        string,
+        string,
+      ...
+      ],
+    "spotify_link": string,
+    "tempo": float,
+    "track_id": string,
+    "track_name": string
+  },
+  {
+    ...
+  },
+  ...
+]}
+```
 
 `\testLink`
 
-- Returns an object with key `Song Links` and a value of 
+- Returns an object with key `Song Links` and a value of 10 links to songs on spotify
+  - Creates on song name "Move your Feet"
+
+- Fairly deprecated route, no need to hit it
+
+```
+{"Song Links":[
+  spotify link string,
+  spotify link string,
+  ...
+]}
+```
 
 ## Data dictionary - Songs
 `track_id` - Hash for song
