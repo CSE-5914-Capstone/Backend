@@ -23,7 +23,7 @@ clientPass = '8861fc75e1bd49c29aa035278faa6e8f'
 authenticate = SpotifyOAuth(client_id=clientId,client_secret=clientPass, redirect_uri='http://127.0.0.1:5000/testLink')
 #sp = Spotify(client_credentials_manager=authenticate), authenticate
 #token = authenticate.get_access_token()
-print('connection created')
+#print('connection created')
 
 
 def makeParams(track_name, danceability, energy, loudness, liveness, valence, tempo):
