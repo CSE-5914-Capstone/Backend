@@ -26,7 +26,7 @@ authenticate = SpotifyOAuth(client_id=clientId,client_secret=clientPass, redirec
 #print('connection created')
 
 
-def makeParams(track_name, danceability, energy, loudness, liveness, valence, tempo):
+def makeParams(track_id, track_name, danceability, energy, loudness, liveness, valence, tempo):
     params = dict()
     params['danceability'] = scale_value.scale_danceability(danceability)
     params['energy'] = scale_value.scale_energy(energy)
@@ -35,10 +35,15 @@ def makeParams(track_name, danceability, energy, loudness, liveness, valence, te
     params['valence'] = scale_value.scale_valence(valence)
     params['tempo'] = scale_value.scale_tempo(tempo)
 
+    if track_id is None:
+        params['track_id'] = '4Y6cDd4EPHcEbiUKdyvNwM'
+    else:
+        params['track_id'] = track_id
     if track_name is None:
         params['track_name'] = 'Macarena'
     else:
         params['track_name'] = track_name
+        
     return params
 
 def searchSimilar(targetSongData, userData):
@@ -60,8 +65,8 @@ def searchSimilar(targetSongData, userData):
     return similarSongs['hits']['hits']
 
 def queryTop10(standInParams):
-    trackname = standInParams['track_name']
-    targetSong = es.search(index='songs', body={"query": {"match": {"track_name": trackname}}})['hits']['hits'][0]
+    track_id = standInParams['track_id']
+    targetSong = es.search(index='songs', body={"query": {"match": {"track_id": track_id}}})['hits']['hits'][0]
     targetSongData = targetSong['_source']
 
     names = []
@@ -81,10 +86,11 @@ def queryTop10(standInParams):
 
 def getSongAttributes(standInParams):
     trackname = standInParams['track_name']
+    track_id = standInParams['track_id']
     targetSong = es.search(index='songs', body={"query": {"match": {"track_name": trackname}}})['hits']['hits'][0]
     targetSongData = targetSong['_source']
 
-    standInParams = makeParams(trackname, None, None, None, None, None, None)
+    standInParams = makeParams(track_id, trackname, None, None, None, None, None, None)
     names = []
     similarSongs = searchSimilar(targetSongData, standInParams)
     for song in similarSongs:
@@ -100,18 +106,22 @@ CORS(app)
 
 @app.route('/query')
 def getSong():
-    track_name = request.args.get('trackname')
+    track_id = request.args.get('track_id')
+    track_name = request.args.get('track_name')
     if track_name is None:
-        track_name = "Macarena"
+        track_name = 'Macarena'
+    if track_id is None:
+        track_id = "4Y6cDd4EPHcEbiUKdyvNwM"
     standInParams = dict()
-    standInParams['track_name'] = f"{track_name}"
+    standInParams['track_id'] = f"{track_id}"
 
-    standInParams = makeParams(track_name, None, None, None, None, None, None)
+    standInParams = makeParams(track_id, track_name, None, None, None, None, None, None)
     return queryTop10(standInParams)
 
 
 @app.route('/querycard')
 def getSongAndAttributes():
+    track_id = request.args.get('track_id')
     track_name = request.args.get('trackname')
     danceability = request.args.get('danceability')
     energy = request.args.get('energy')
@@ -120,7 +130,7 @@ def getSongAndAttributes():
     valence = request.args.get('valence')
     tempo = request.args.get('tempo')
 
-    params = makeParams(track_name, danceability, energy, loudness, liveness, valence, tempo)
+    params = makeParams(track_id, track_name, danceability, energy, loudness, liveness, valence, tempo)
 
     return queryTop10(params)
 
