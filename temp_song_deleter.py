@@ -6,6 +6,11 @@ elastic_pwd_file.close()
 
 es = Elasticsearch('https://localhost:9200', ca_certs="http_ca.crt", basic_auth=("elastic", elastic_pwd))
 
-response = es.indices.delete(index='songs')
-print(response)
-print(es.indices.exists(index='songs'))
+if(not es.indices.exists(index='songs')):
+    print("No songs index: ready to index with song_query")
+else:
+    print("Clearing song index")    
+    response = es.indices.delete(index='songs')
+    print(response)
+    print(es.indices.exists(index='songs'))
+    print("No songs index: ready to index with song_query")

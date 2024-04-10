@@ -1,23 +1,41 @@
-# Engine for querying elasticsearch with song data
+# Melody Miners Playlist Recommendation System Backend
 
-Copy `http_ca.crt` to directory and make a text file called `docker_elastic_pwd.txt` with your docker elastic password.
-Those are in the .gitignore file, keep your local versions local
+## Engine for querying elasticsearch with song data
+
+Provided here is the code to fill an existing elasticsearch docker container with songs from Spotify and create a playlist based on a requested song and tuning parameters from the [Melody Miners Frontend](https://github.com/CSE-5914-Capstone/frontend).
+
+This docker container must be configured locally in order for songs to be indexed and searched. We recommend using Docker Desktop for simpler packaging and bootup of the instance for on-the-fly usage once installed and configured, but following the command line instructions from [Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html) to intialize the container.
+
+Install [Docker Desktop](https://docs.docker.com/desktop/) for your local system if you currently do not have Docker. Then follow the above Elasticsearch install instructions. Optional step 4 is not needed for the Melody Miners system. Pay special attention to steps 5 and 7 to access and store certification information that will be needed in order to run the application. 
+
+**Step 5**
+
+The command line output following the issued command will be verbose, but a 20-character, plaintext, alphanumeric password is generated and highlighted after completion. Copy this text and save it to a file named `docker_elastic_pwd.txt` in the same directory as the Backend code (on the same level as this `README.md` file). The following step 6 details how to regenerate this password if you lose access to it. The kibana enrollment token can be ignored, as the actual application is local to your Docker container.
+
+**Step 7**
+
+This step accesses the certification file for Elastic that allows communication with your container from code. If you issue the command from a terminal located in the Backend directory, this certification file will be copied to the correct place. Otherwise, replace the `.` at the end of the command with the location of your Backend directory to put the certification in the correct location. 
+
+At this point, to begin communicating with your elasticsearch instance, start the `es01` container on Docker via the desktop GUI or command line if comfortable. This is a simple press of a start button on Docker Desktop. 
+
 
 ### Accessing Data
 
-Download [`track_features.csv`](https://www.kaggle.com/datasets/rodolfofigueroa/spotify-12m-songs) from https://www.kaggle.com/datasets/rodolfofigueroa/spotify-12m-songs. Add this file to the `datastore` directory (it is included in the .gitignore to prevent tracking of massive files). Run `csvtojson.py` in order to get the data into json format, run `clean_data.py` to create the unique song data which will eventually be indexed, run `temp_song_deleter.py` to assert that you have a clean elasticsearch index, and run `song_query.py` to open flask server.
+Download [`uniquesongs.json`](https://drive.google.com/file/d/1aC2wqYVMMvoN8aLnbU5FxlkQ3LR0pIjE/view?usp=drive_link) for prepackaged song data. Add this file to the `datastore` directory (it is included in the .gitignore to prevent tracking of massive files). Run `temp_song_deleter.py` to assert that you have a clean elasticsearch index, and run `song_query.py` to open flask server.
 
-The /init route answers requests with a simple object that states that songs have been loaded.
-
-The /query route answers requests with 10 an array of 10 song names constituting a playlist. A `?trackname=<insert song name>` parameter can be supplied to query for a specific song, but if no song is supplied, the default playlist returned is for The Macarena.
+**With the running Flask server, follow the instructions on the Melody Miners Frontend in order to begin generating playlists for your favorite songs!**
 
 ### Resetting
 
 Run `temp_song_deleter.py` to clear current status of songs in index and songs index to reset workflow
 
-## Queryable API Routes
+## Extra Information
 
-`\querycard`
+### Queryable API Routes
+
+`/querycard`
+
+The /querycard route is the default endpoint that is spun up by `song_query.py` and the corresponding flask server. This is the route that accepts specified song attributes to create a more user-specific playlist. The URL arguments available on this route are listed below.
 
 **All params scale from 0-10 to range of values available in data**
 - Parameters 
@@ -129,11 +147,9 @@ Returns object for a playlist on that track name
 
 `explicit` - Binary flag for explicitness of a song
 
-## Query Information
-Current Input - route `query?trackname=<enter song here>`. This will return a 10 song playlist 
+### Elasticsearch Query Information
+
 Query Matches:
-  - Genre of search song to the queried songs
-Query Filter:
   - Danceability Range +/- 0.15
   - Energy Range +/- 0.15
   - Loudness Range +/- 15
@@ -141,3 +157,4 @@ Query Filter:
   - Happiness (Valence) Range +/- 0.15
   - Tempo Range +/- 15
 
+Playlist will return songs that minimize the differences between song and target song attributes within this window. For example, a song with all slightly different attributes will be preferred over one that exact matches danceability and is nowhere near other attributes that the user specifies/are implied by the target song.
