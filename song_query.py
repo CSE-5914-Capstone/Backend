@@ -76,7 +76,7 @@ def queryTop10(standInParams):
         currsongdata['track_name'] = song['_source']['track_name']
         currsongdata['track_id'] = song['_source']['track_id']
         currsongdata['spotify_link'] = 'https://open.spotify.com/track/' + song['_source']['track_id']
-        currsongdata['tempo'] = song['_source']['tempo']
+        currsongdata['tempo'] = int(song['_source']['tempo'])
         currsongdata['artists'] = song['_source']['artists']
         currsongdata['album_id'] = song['_source']['track_album_id']
         names.append(currsongdata)
