@@ -66,7 +66,12 @@ def searchSimilar(targetSongData, userData):
 
 def queryTop10(standInParams):
     track_id = standInParams['track_id']
-    targetSong = es.search(index='songs', body={"query": {"match": {"track_id": track_id}}})['hits']['hits'][0]
+    track_name = standInParams['track_name']
+    targetSong = es.search(index='songs', body={"query": {"match": {"track_id": track_id}}})['hits']['hits']
+    if(len(targetSong) <= 0):
+        targetSong = es.search(index='songs', body = {"query": {"match": {"track_name": track_name}}})['hits']['hits'][0]
+    else:
+        targetSong = targetSong[0]
     targetSongData = targetSong['_source']
 
     names = []
